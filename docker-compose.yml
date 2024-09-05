@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+    django:
+        build: demoDjangoAuth
+        expose:
+            - "80"
+        env_file:
+            - "production.env"
+        container_name: django_base
+        command: gunicorn -c "./gunicorn_config.py" demoDjangoAuth.wsgi
+#        command: python manage.py runserver 0.0.0.0:80
+        restart: always
+        depends_on:
+            - postgres
+        volumes:
+            - "./data/static:/app/static"
+            - "./data/media:/media"
+            - "./demoDjangoAuth:/app/" # для прода убрать
+
+
+    postgres:
+        image: postgres:15.2
+        container_name: postgres
+        restart: always
+        # set shared memory limit when using docker-compose
+        shm_size: 128mb
+        # or set shared memory limit when deploy via swarm stack
+        #volumes:
+        #  - type: tmpfs
+        #    target: /dev/shm
+        #    tmpfs:
+        #      size: 134217728 # 128*2^20 bytes = 128Mb
+        env_file:
+            - "production.env"
+        ports:
+            - "5432:5432"
+        volumes:
+            - "./data/postgres/dir:/var/lib/postgresql/data"
+            - "./data/postgres/backup:/docker-entrypoint-initdb.d/"
+
+
+    nginx:
+        image: nginx:1.27.1
+        container_name: nginx_base
+        volumes:
+            - "./data/nginx/templates:/etc/nginx/templates"
+            - "./data/nginx/logs:/var/log/nginx"
+            - "./data/nginx/config:/etc/nginx/conf.d"
+            - "./data/static:/var/static"
+            - "./data/media:/var/media"
+            - "./data/nginx/certs:/etc/nginx/certs/"
+        ports:
+            - "8080:8080"
+        environment:
+            - NGINX_HOST=127.0.0.0
+            - NGINX_PORT=8080
+        depends_on:
+            - django
+        restart: always
