@@ -1,0 +1,17 @@
+<header>
+    {% if user.is_authenticated %}
+    <span><a href="{% url 'user_account:profile' %}">Hello, {{ user.username }}!</a></span>
+    <span> | </span>
+    <span><a href="{% url 'user_account:logout' %}">Logout</a></span>
+    <span> | </span>
+    {% else %}
+    <span><a href="{% url 'user_account:login' %}">Login</a></span>
+    <span> | </span>
+    <span><a href="{% url 'user_account:signup' %}">SignUp</a></span>
+    {% endif %}
+</header>
+<hr/>
+
+{% block content %}
+<h1>Index page</h1>
+{% endblock %}
