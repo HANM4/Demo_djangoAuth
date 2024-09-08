@@ -1,3 +1,4 @@
+from django.contrib.auth.views import LoginView
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, redirect
 
@@ -9,36 +10,17 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 
 from django.contrib.auth.decorators import login_required
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
+from django.views.generic import CreateView
 
 
-def login_view(request):
-    error = None
-    # if post, then authenticate (user submitted username and password)
-    if request.method == 'POST':
-        form = AuthenticationForm(request, request.POST)
-        if form.is_valid():
-            u = form.cleaned_data['username']
-            p = form.cleaned_data['password']
-            user = authenticate(username = u, password = p)
-            if user is not None:
-                if user.is_active:
-                    login(request, user)
-                    return HttpResponseRedirect(reverse('user_account:profile'))
-                else:
-                    error = 'The account has been disabled.'
-            else:
-                error = 'The username and/or password is incorrect.'
-        else:
-            error = 'The username and/or password is don`t valid.'
-    form = AuthenticationForm()
-    return render(request, 'login.html', {'form': form, 'error': error})
+class LoginUser(LoginView):
+    form_class = AuthenticationForm
+    template_name = 'login.html'
 
-
-def logout_view(request):
-    logout(request)
-    return redirect('/')
+    def get_success_url(self):
+        return reverse_lazy('user_account:profile')
 
 
 @login_required
@@ -46,14 +28,12 @@ def profile_view(request):
     return render(request, 'profile.html')
 
 
-# add this function
-def signup_view(request):
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect(reverse('user_account:profile'))
-    else:
-        form = UserCreationForm()
-        return render(request, 'signup.html', {'form': form})
+class SignupUser(CreateView):
+    form_class = UserCreationForm
+    template_name = 'signup.html'
+    success_url = reverse_lazy('user_account:profile')
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        login(self.request, self.object)
+        return response

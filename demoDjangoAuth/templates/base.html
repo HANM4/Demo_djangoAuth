@@ -2,7 +2,10 @@
     {% if user.is_authenticated %}
     <span><a href="{% url 'user_account:profile' %}">Hello, {{ user.username }}!</a></span>
     <span> | </span>
-    <span><a href="{% url 'user_account:logout' %}">Logout</a></span>
+    <form action="{% url 'user_account:logout' %}" method="post" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit" style="background: none; border: none; color: blue; text-decoration: underline; cursor: pointer;">Logout</button>
+    </form>
     <span> | </span>
     {% else %}
     <span><a href="{% url 'user_account:login' %}">Login</a></span>
