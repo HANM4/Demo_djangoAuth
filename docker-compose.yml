@@ -7,7 +7,6 @@ services:
             - "80"
         env_file:
             - "production.env"
-        container_name: django_base
         command: gunicorn -c "./gunicorn_config.py" demoDjangoAuth.wsgi
 #        command: python manage.py runserver 0.0.0.0:80
         restart: always
@@ -16,12 +15,11 @@ services:
         volumes:
             - "./data/static:/app/static"
             - "./data/media:/media"
-            - "./demoDjangoAuth:/app/" # для прода убрать
+            - "./demoDjangoAuth:/app" # для прода убрать
 
 
     postgres:
         image: postgres:15.2
-        container_name: postgres
         restart: always
         # set shared memory limit when using docker-compose
         shm_size: 128mb
@@ -42,7 +40,6 @@ services:
 
     nginx:
         image: nginx:1.27.1
-        container_name: nginx_base
         volumes:
             - "./data/nginx/templates:/etc/nginx/templates"
             - "./data/nginx/logs:/var/log/nginx"
