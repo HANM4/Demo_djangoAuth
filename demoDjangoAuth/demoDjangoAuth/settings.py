@@ -142,6 +142,10 @@ AUTH_PASSWORD_VALIDATORS = [
 LOGIN_REDIRECT_URL = 'user_account:profile'
 LOGIN_URL = 'user_account:login'
 LOGOUT_REDIRECT_URL = 'index'
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'Auth.authentication.EmailAuthBackend',
+]
 
 
 # Internationalization
