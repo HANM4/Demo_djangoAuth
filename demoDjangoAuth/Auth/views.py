@@ -17,7 +17,7 @@ from django.views.generic import CreateView
 
 class LoginUser(LoginView):
     form_class = AuthenticationForm
-    template_name = 'login.html'
+    template_name = 'Auth/login.html'
 
     def get_success_url(self):
         return reverse_lazy('user_account:profile')
@@ -25,12 +25,12 @@ class LoginUser(LoginView):
 
 @login_required
 def profile_view(request):
-    return render(request, 'profile.html')
+    return render(request, 'Auth/profile.html')
 
 
 class SignupUser(CreateView):
     form_class = RegisterUserForm
-    template_name = 'signup.html'
+    template_name = 'Auth/signup.html'
     success_url = reverse_lazy('user_account:profile')
 
     def form_valid(self, form):
