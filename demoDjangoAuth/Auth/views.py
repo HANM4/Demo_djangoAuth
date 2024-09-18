@@ -11,7 +11,7 @@ from django.contrib.auth.forms import UserCreationForm
 
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse, reverse_lazy
-from django.utils.decorators import method_decorator
+from .forms import RegisterUserForm
 from django.views.generic import CreateView
 
 
@@ -29,7 +29,7 @@ def profile_view(request):
 
 
 class SignupUser(CreateView):
-    form_class = UserCreationForm
+    form_class = RegisterUserForm
     template_name = 'signup.html'
     success_url = reverse_lazy('user_account:profile')
 
