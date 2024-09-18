@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
 <h1>Hello, {{ user.username }}</h1>
+<hr>
+<p ><a href="{% url 'user_account:password_change' %}">Сменить пароль</a></p>
 {% endblock %}

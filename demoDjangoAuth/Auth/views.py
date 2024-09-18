@@ -1,4 +1,4 @@
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView, PasswordChangeView
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, redirect
 
@@ -35,5 +35,10 @@ class SignupUser(CreateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        login(self.request, self.object)
+        login(self.request, self.object,
+              backend='Auth.authentication.EmailAuthBackend')
         return response
+
+
+class AuthPasswordChangeView(PasswordChangeView):
+    success_url = reverse_lazy("user_account:password_change_done")
